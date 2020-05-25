@@ -1,0 +1,5 @@
+/dist
+/src-bex/www
+/**/*.d.ts
+/src-pwa
+/src-ssr
