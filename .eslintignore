@@ -3,3 +3,5 @@
 /**/*.d.ts
 /src-pwa
 /src-ssr
+/public
+/www

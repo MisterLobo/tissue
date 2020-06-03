@@ -3,10 +3,13 @@
 node_modules
 
 # Quasar core related directories
+.firebase
 .quasar
 /dist
 /src-pwa
 /src-ssr
+/public
+/www
 
 # Cordova related directories and files
 /src-cordova/node_modules
