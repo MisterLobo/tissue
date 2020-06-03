@@ -30,11 +30,8 @@ jobs:
       - run: yarn
       - run: quasar build -m ssr
       - run: quasar build
-      - name: Download Artifact
-        uses: actions/download-artifact@master
-        with:
-          name: dist/spa
-          path: dist/spa
+      - run: rm -rf public
+      - run: cp -r dist/spa public
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
