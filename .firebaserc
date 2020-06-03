@@ -1,6 +1,6 @@
 {
   "projects": {
     "default": "tissue-4c114",
-    "dev": "tissuedev-72c72"
+    "dev": "tissue-dev"
   }
 }

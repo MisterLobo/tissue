@@ -32,8 +32,12 @@ jobs:
       - run: quasar build
       - run: rm -rf public
       - run: cp -r dist/spa public
+      - run: ls -al
+      - run: pwd
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
-      - run: firebase use default
-      - run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - run: firebase use dev
+      - run: firebase deploy --only hosting
       - run: echo build successful!
