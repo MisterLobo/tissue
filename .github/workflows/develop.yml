@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [14.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -34,8 +34,6 @@ jobs:
       - run: cp -r dist/spa public
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - run: firebase use default
+      - run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
       - run: echo build successful!
