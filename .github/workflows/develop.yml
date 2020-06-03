@@ -34,10 +34,16 @@ jobs:
       - run: cp -r dist/spa public
       - run: ls -al
       - run: pwd
-      - name: Deploy to Firebase
+      - name: Deploy to Firebase 1
         uses: w9jds/firebase-action@master
+        with:
+          args: use dev
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      - run: firebase use dev
-      - run: firebase deploy --only hosting
+      - name: Deploy to Firebase 2
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       - run: echo build successful!
