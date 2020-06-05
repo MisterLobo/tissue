@@ -26,23 +26,20 @@ jobs:
       - run: npm i -g @quasar/cli
       - run: npm i -g firebase-tools
       - run: yarn
-      #- run: quasar build -m ssr
       - run: quasar build
       - run: rm -rf public
       - run: cp -r dist/spa public
-      #- run: cp ./scripts/getenv.sh public/
-      - run: cd public
-      - run: echo ${{ secrets.DEV_ENV_VARS }} > env
+      - run: ./scripts/denv.sh
       - run: cat env
       - run: ls -al
       - run: pwd
-      - name: Deploy to Firebase 1
+      - name: Use dev
         uses: w9jds/firebase-action@master
         with:
           args: use dev
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      - name: Deploy to Firebase 2
+      - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
