@@ -29,7 +29,8 @@ jobs:
       - run: npm i -g @quasar/cli
       - run: npm i -g firebase-tools
       - run: yarn
-      #- run: sudo ./scripts/denv.sh
+      - run: ls -al
+      - run: chmod +x ./scripts/build.sh
       - run: gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./devenv devenv.gpg
       - run: sudo sh -c ./scripts/build.sh $(cat devenv) #build the project
       - run: rm -rf public
