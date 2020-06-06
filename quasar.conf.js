@@ -85,6 +85,21 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'history', // available values: 'hash', 'history'
+      env: ctx.dev
+        ? { // so on dev we'll have
+          GITHUB_CALLBACK_URL: JSON.stringify(process.env.VUE_APP_AUTH_CALLBACK_URL),
+          AUTH_API_URL: JSON.stringify(process.env.VUE_APP_AUTH_API_URL),
+          GITHUB_CLIENT_ID: JSON.stringify(process.env.VUE_APP_GITHUB_CLIENT_ID),
+          GOOGLE_CLIENT_ID: JSON.stringify(process.env.VUE_APP_GOOGLE_CLIENT_ID),
+          GOOGLE_AUTH_CALLBACK: JSON.stringify(process.env.VUE_APP_GOOGLE_AUTH_CALLBACK)
+        }
+        : { // and on build (production):
+          GITHUB_CALLBACK_URL: JSON.stringify(process.env.VUE_APP_AUTH_CALLBACK_URL),
+          AUTH_API_URL: JSON.stringify(process.env.VUE_APP_AUTH_API_URL),
+          GITHUB_CLIENT_ID: JSON.stringify(process.env.VUE_APP_GITHUB_CLIENT_ID),
+          GOOGLE_CLIENT_ID: JSON.stringify(process.env.VUE_APP_GOOGLE_CLIENT_ID),
+          GOOGLE_AUTH_CALLBACK: JSON.stringify(process.env.VUE_APP_GOOGLE_AUTH_CALLBACK)
+        },
 
       // rtl: false, // https://quasar.dev/options/rtl-support
       // preloadChunks: true,
