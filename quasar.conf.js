@@ -19,6 +19,7 @@ module.exports = configure(function (ctx) {
       'composition-api',
       'i18n',
       'axios',
+      'check-auth',
       'social-auth-provider'
     ],
 
