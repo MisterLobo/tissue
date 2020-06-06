@@ -36,8 +36,8 @@
               </q-item>
             </q-menu>
           </q-btn>
-          <q-btn round dense flat icon="mdi-cart" v-if="$q.screen.gt.sm" :to="{ name: 'myCart' }" exact>
-            <q-tooltip>My Cart</q-tooltip>
+          <q-btn round dense flat icon="mdi-alert-circle-outline" v-if="$q.screen.gt.sm" :to="{ name: 'myCart' }" exact>
+            <q-tooltip>Issues</q-tooltip>
           </q-btn>
           <q-btn round dense flat icon="message" v-if="$q.screen.gt.sm" :to="{ name: 'chat' }" exact>
             <q-tooltip>Messages</q-tooltip>
@@ -57,6 +57,12 @@
             </q-avatar>
             <q-tooltip>Account</q-tooltip>
             <q-menu anchor="bottom right" self="top right" :offset="[0, 20]">
+              <q-item>
+                <q-item-section>
+                  <span class="text-bold">Signed in as {{ getUser.name }}</span>
+                  <span class="text-italic">{{ getUser.email }}</span>
+                </q-item-section>
+              </q-item>
               <q-item clickable>
                 <q-item-section>My Profile</q-item-section>
               </q-item>
@@ -140,6 +146,17 @@ export default {
       right: false,
       scroll: true
     }
-  })
+  }),
+  methods: {
+    onLeft ({ reset }) {
+      this.$q.notify('Left action triggered. Resetting in 1 second.')
+      this.finalize(reset)
+    },
+    finalize (reset) {
+      this.timer = setTimeout(() => {
+        reset()
+      }, 1000)
+    }
+  }
 }
 </script>
