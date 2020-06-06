@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PASSPHRASE=$DEV_GPG_SECRET
+PASSPHRASE=$mysecret
 FILE=devenv.gpg
 
 sudo gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" --output ./devenv "$FILE"

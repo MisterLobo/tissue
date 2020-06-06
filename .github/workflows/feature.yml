@@ -30,7 +30,7 @@ jobs:
       - run: npm i -g firebase-tools
       - run: yarn
       #- run: sudo ./scripts/denv.sh
-      - run: DEV_GPG_SECRET=${{ env.mysecret }} sudo sh -c ./scripts/denv.sh #gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./env devenv.gpg
+      - run: sudo sh -c ./scripts/denv.sh #gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./env devenv.gpg
       - run: ./scripts/build.sh $(cat devenv) #build the project
       - run: rm -rf public
       - run: cp -r dist/spa public
