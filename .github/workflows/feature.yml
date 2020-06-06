@@ -28,7 +28,7 @@ jobs:
       - run: yarn
       #- run: sudo ./scripts/denv.sh
       - run: DEV_GPG_SECRET=${{ secrets.DEV_GPG_SECRET }} sudo ./scripts/denv.sh #gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./env devenv.gpg
-      - run: ./scripts/build.sh #build the project
+      - run: ./scripts/build.sh $(cat env) #build the project
       - run: rm -rf public
       - run: cp -r dist/spa public
       - run: ls -al
