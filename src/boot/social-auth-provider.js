@@ -10,7 +10,7 @@ Vue.use(VueSocialauth, {
   providers: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID,
-      redirectUri: process.env.AUTH_CALLBACK_URL // Your client app URL
+      redirectUri: process.env.GITHUB_CALLBACK_URL // Your client app URL
     },
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID,
