@@ -26,15 +26,16 @@ jobs:
       - run: npm i -g @quasar/cli
       - run: npm i -g firebase-tools
       - run: yarn
-      - run: quasar build
+      #- run: sudo ./scripts/denv.sh
+      - run: DEV_GPG_SECRET=${{ secrets.DEV_GPG_SECRET }} sudo ./scripts/denv.sh #gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./env devenv.gpg
+      - run: ./scripts/build.sh #build the project
       - run: rm -rf public
       - run: cp -r dist/spa public
-      #- run: sudo ./scripts/denv.sh
-      - run: sudo gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./env devenv.gpg
-      - run: cp env ./public
-      - run: cat env
       - run: ls -al
       - run: pwd
+      - run: cp public
+      - run: ls -al
+      - run: cd ..
       - name: Use dev
         uses: w9jds/firebase-action@master
         with:
