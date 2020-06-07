@@ -18,6 +18,9 @@ jobs:
       matrix:
         node-version: [14.x]
 
+    env:
+      mysecret: ${{ secrets.DEV_GPG_SECRET }}
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -28,19 +31,26 @@ jobs:
       - run: npm i -g @quasar/cli
       - run: npm i -g firebase-tools
       - run: yarn
-      - run: quasar build -m ssr
-      - run: quasar build
+      - run: ls -al
+      - run: chmod +x ./scripts/build.sh
+      - run: chmod +x ./scripts/denv.sh
+      - run: ls -al
+      - run: DEV_GPG_SECRET=${{ secrets.DEV_GPG_SECRET }} ./scripts/denv.sh #decrypt the file
+      - run: ./scripts/build.sh $(cat devenv) #build the project
       - run: rm -rf public
       - run: cp -r dist/spa public
       - run: ls -al
       - run: pwd
-      - name: Deploy to Firebase 1
+      - run: cd public
+      - run: ls -al
+      - run: cd ..
+      - name: Use dev
         uses: w9jds/firebase-action@master
         with:
           args: use dev
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      - name: Deploy to Firebase 2
+      - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
