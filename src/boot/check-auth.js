@@ -6,7 +6,7 @@
 export default async ({ store, redirect, urlPath }) => {
   console.log(urlPath)
   if (urlPath === '/login') return
-  if (urlPath.contains('/auth')) return
+  if (urlPath !== '/' && urlPath.contains('/auth')) return
   if (store.getters['user/isAuthenticated'] !== true) {
     console.log('Not logged in. Redirecting')
     await redirect('/login')
