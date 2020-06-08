@@ -4,3 +4,6 @@ export function getUserState (state) {
 export function isAuthenticated (state) {
   return state.isAuth
 }
+export function isChecked (state) {
+  return state.isAuth
+}
