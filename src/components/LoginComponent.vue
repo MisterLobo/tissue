@@ -37,11 +37,10 @@ export default {
 
     SocialLogin (provider, response) {
       this.$http.post(process.env.AUTH_API_URL + provider, response).then(response => {
-        console.log(response.data)
         const user = response.data
         this.$store.dispatch('user/storeUser', user)
-        const userstate = this.getUser
-        console.log(userstate)
+        this.$q.sessionStorage.set('auth_provider', provider)
+        this.$q.sessionStorage.set('user_token', user.token)
         this.$router.push('/')
       }).catch(err => {
         console.log({ err: err })
