@@ -16,6 +16,6 @@ export function fetchUser ({ commit }, { provider, token }) {
       console.log({ err: err })
     })
 }
-export function check({ commit }, value) {
+export function check ({ commit }, value) {
   commit('setCheckState', value)
 }
