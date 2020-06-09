@@ -37,7 +37,7 @@ export default {
     },
 
     SocialLogin (provider, response) {
-      const config = process.env.HAS_AUTH ? { headers: { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } } } : null
+      const config = process.env.HAS_AUTH ? { config: { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } } } : null
       this.$http.post(process.env.AUTH_API_URL + provider, response, config).then(response => {
         const user = response.data
         this.$store.dispatch('user/storeUser', user)
