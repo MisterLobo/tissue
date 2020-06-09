@@ -36,7 +36,7 @@ jobs:
       - run: ls -al
       - run: chmod +x ./scripts/devenv.sh
       - run: DEV_GPG_SECRET=${{ secrets.DEV_GPG_SECRET }} ./scripts/devenv.sh #gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./devenv devenv.gpg
-      - run: ./scripts/build.sh $(cat devenv) #build the project
+      - run: chmod +x ./scripts/build.sh ./scripts/build.sh $(cat devenv) #build the project
       - run: echo build successful!
       - name: Run tests using NPM
         run: npm test
