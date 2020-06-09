@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Production CI/CD
+name: Demo/Test Workflow
 
 on:
   push:
@@ -46,10 +46,10 @@ jobs:
       - run: cd public
       - run: ls -al
       - run: cd ..
-      - name: Use dev
+      - name: Use demo
         uses: w9jds/firebase-action@master
         with:
-          args: use dev
+          args: use demo
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       - name: Deploy to Firebase
