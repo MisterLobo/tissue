@@ -37,7 +37,7 @@ export default {
     },
 
     SocialLogin (provider, response) {
-      const auth = process.env.HAS_AUTH ? 'Authorization: Basic ' + btoa(process.env.AUTH_USER + ':' + process.env.AUTH_PASSWORD)' : null
+      const auth = process.env.HAS_AUTH ? 'Authorization: Basic ' + btoa(process.env.AUTH_USER + ':' + process.env.AUTH_PASSWORD) : null
       const config = process.env.HAS_AUTH ? { config: { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } } } : null
       this.$http.post(process.env.AUTH_API_URL + provider, response, { headers: auth } ).then(response => {
         const user = response.data
