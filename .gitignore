@@ -42,4 +42,5 @@ yarn-error.log*
 .env
 env
 devenv
-wenv
+demoenv
+dotenv
