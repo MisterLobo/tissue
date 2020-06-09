@@ -27,6 +27,7 @@ export default {
         console.log(process.env.NODE_ENV)
         console.log(process.env.AUTH_API_URL)
         console.log(process.env.GITHUB_CALLBACK_URL)
+        console.log(process.env.AUTH_USER, process.env.AUTH_PASSWORD)
       }
       this.$auth.authenticate(provider).then(response => {
         this.SocialLogin(provider, response)
@@ -36,12 +37,13 @@ export default {
     },
 
     SocialLogin (provider, response) {
-      this.$http.post(process.env.AUTH_API_URL + provider, response).then(response => {
-        console.log(response.data)
+      const auth = process.env.HAS_AUTH ? { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } } : null
+      // console.log(auth)
+      this.$http.post(process.env.AUTH_API_URL + provider, response, auth).then(response => {
         const user = response.data
         this.$store.dispatch('user/storeUser', user)
-        const userstate = this.getUser
-        console.log(userstate)
+        this.$q.sessionStorage.set('auth_provider', provider)
+        this.$q.sessionStorage.set('user_token', user.token)
         this.$router.push('/')
       }).catch(err => {
         console.log({ err: err })
