@@ -5,9 +5,11 @@ name: Development CI/CD
 
 on:
   push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+    branches: [ develop, 'bugfix/**' ]
+    paths:
+      - 'src/**'
+  #pull_request:
+  #  branches: [ develop ]
 
 jobs:
   build:
@@ -33,16 +35,16 @@ jobs:
       - run: yarn
       - run: ls -al
       - run: chmod +x ./scripts/build.sh
-      - run: chmod +x ./scripts/denv.sh
+      - run: chmod +x ./scripts/devenv.sh
       - run: ls -al
-      - run: DEV_GPG_SECRET=${{ secrets.DEV_GPG_SECRET }} ./scripts/denv.sh
+      - run: DEV_GPG_SECRET=${{ secrets.DEV_GPG_SECRET }} ./scripts/devenv.sh
       - run: ./scripts/build.sh $(cat devenv) #build the project
       - run: rm -rf public
       - run: cp -r dist/spa public
       - uses: actions/upload-artifact@v2
         with:
-          name: Public
-          path: public
+          name: Development Build
+          path: dist
       - run: ls -al
       - run: pwd
       - run: cd public
