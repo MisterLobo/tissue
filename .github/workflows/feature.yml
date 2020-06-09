@@ -35,27 +35,27 @@ jobs:
       - run: ls -al
       - run: DEV_GPG_SECRET=${{ secrets.DEV_GPG_SECRET }} ./scripts/denv.sh #gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./devenv devenv.gpg
       - run: ./scripts/build.sh $(cat devenv) #build the project
-      - run: rm -rf public
-      - run: cp -r dist/spa public
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Public
-          path: public
-      - run: ls -al
-      - run: pwd
-      - run: cd public
-      - run: ls -al
-      - run: cd ..
-      - name: Use dev
-        uses: w9jds/firebase-action@master
-        with:
-          args: use dev
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      #- run: rm -rf public
+      #- run: cp -r dist/spa public
+      #- uses: actions/upload-artifact@v2
+      #  with:
+      #    name: Public
+      #    path: public
+      #- run: ls -al
+      #- run: pwd
+      #- run: cd public
+      #- run: ls -al
+      #- run: cd ..
+      #- name: Use dev
+      #  uses: w9jds/firebase-action@master
+      #  with:
+      #    args: use dev
+      #  env:
+      #    FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      #- name: Deploy to Firebase
+      #  uses: w9jds/firebase-action@master
+      #  with:
+      #    args: deploy --only hosting
+      #  env:
+      #    FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       - run: echo build successful!
