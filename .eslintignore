@@ -6,3 +6,6 @@
 /public
 /www
 /functions
+/test
+wallaby.js
+*.config.js
