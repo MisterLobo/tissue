@@ -94,7 +94,10 @@ module.exports = configure(function (ctx) {
           GITHUB_CLIENT_ID: JSON.stringify(process.env.VUE_APP_GITHUB_CLIENT_ID),
           GOOGLE_CLIENT_ID: JSON.stringify(process.env.VUE_APP_GOOGLE_CLIENT_ID),
           GOOGLE_AUTH_CALLBACK: JSON.stringify(process.env.VUE_APP_GOOGLE_AUTH_CALLBACK),
-          API_URL: JSON.stringify(process.env.VUE_APP_API_URL)
+          API_URL: JSON.stringify(process.env.VUE_APP_API_URL),
+          HAS_AUTH: JSON.stringify(process.env.VUE_APP_HAS_AUTH),
+          AUTH_USER: JSON.stringify(process.env.VUE_APP_AUTH_USERNAME),
+          AUTH_PASSWORD: JSON.stringify(process.env.VUE_APP_AUTH_PASSWORD)
         }
         : { // and on build (production):
           GITHUB_CALLBACK_URL: JSON.stringify(process.env.VUE_APP_GITHUB_CALLBACK_URL),
@@ -102,7 +105,10 @@ module.exports = configure(function (ctx) {
           GITHUB_CLIENT_ID: JSON.stringify(process.env.VUE_APP_GITHUB_CLIENT_ID),
           GOOGLE_CLIENT_ID: JSON.stringify(process.env.VUE_APP_GOOGLE_CLIENT_ID),
           GOOGLE_AUTH_CALLBACK: JSON.stringify(process.env.VUE_APP_GOOGLE_AUTH_CALLBACK),
-          API_URL: JSON.stringify(process.env.VUE_APP_API_URL)
+          API_URL: JSON.stringify(process.env.VUE_APP_API_URL),
+          HAS_AUTH: JSON.stringify(process.env.VUE_APP_HAS_AUTH),
+          AUTH_USER: JSON.stringify(process.env.VUE_APP_AUTH_USERNAME),
+          AUTH_PASSWORD: JSON.stringify(process.env.VUE_APP_AUTH_PASSWORD)
         },
 
       // rtl: false, // https://quasar.dev/options/rtl-support
