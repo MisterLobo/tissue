@@ -27,6 +27,7 @@ export default {
         console.log(process.env.NODE_ENV)
         console.log(process.env.AUTH_API_URL)
         console.log(process.env.GITHUB_CALLBACK_URL)
+        console.log(process.env.AUTH_USER, process.env.AUTH_PASSWORD)
       }
       this.$auth.authenticate(provider).then(response => {
         this.SocialLogin(provider, response)
