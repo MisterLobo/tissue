@@ -5,9 +5,11 @@ name: Release Workflow
 
 on:
   push:
-    branchs:
+    branches:
       - 'releases/**'
       - 'hotfix/**'
+    paths:
+      - 'src/**'
 
 jobs:
   build:
