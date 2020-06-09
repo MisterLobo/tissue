@@ -5,7 +5,9 @@ name: Development Workflow
 
 on:
   push:
-    branches: [ develop, 'bugfix/**' ]
+    branches:
+      - develop
+      - 'bugfix/**'
     paths:
       - 'src/**'
   #pull_request:
