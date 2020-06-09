@@ -44,3 +44,5 @@ env
 devenv
 demoenv
 dotenv
+
+/test/jest/coverage
