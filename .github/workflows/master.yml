@@ -1,0 +1,67 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Production CI/CD
+
+on:
+  push:
+    branches: [ 'hotfix/**' ]
+    tags:
+      - v*-release
+      - v*-hotfix
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    env:
+      mysecret: ${{ secrets.DEV_GPG_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm i -g yarn
+      - run: npm i -g @quasar/cli
+      - run: npm i -g firebase-tools
+      - run: yarn
+      - run: ls -al
+      - run: chmod +x ./scripts/build.sh
+      - run: chmod +x ./scripts/env.sh
+      - run: ls -al
+      - run: PROD_GPG_SECRET=${{ secrets.PROD_GPG_SECRET }} ./scripts/env.sh
+      - run: ./scripts/build.sh $(cat env) #build the project
+      - run: rm -rf public
+      - run: cp -r dist/spa public
+      - run: DIST_PATH=$(git rev-parse --abbrev-ref HEAD)
+      - run: mkdir -p $DIST_PATH
+      - run: cp -r dist "$DIST_PATH"/
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Production Build
+          path: dist
+      - run: ls -al
+      - run: pwd
+      - run: cd public
+      - run: ls -al
+      - run: cd ..
+      - name: Use dev
+        uses: w9jds/firebase-action@master
+        with:
+          args: use dev
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - run: echo build successful!
