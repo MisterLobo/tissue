@@ -27,8 +27,8 @@ export default {
         console.log(process.env.NODE_ENV)
         console.log(process.env.AUTH_API_URL)
         console.log(process.env.GITHUB_CALLBACK_URL)
+        console.log(process.env.AUTH_USER, process.env.AUTH_PASSWORD)
       }
-      console.log(process.env.AUTH_USER, process.env.AUTH_PASSWORD)
       this.$auth.authenticate(provider).then(response => {
         this.SocialLogin(provider, response)
       }).catch(err => {
@@ -37,10 +37,9 @@ export default {
     },
 
     SocialLogin (provider, response) {
-      const auth = process.env.HAS_AUTH ? 'Authorization: Basic ' + btoa(process.env.AUTH_USER + ':' + process.env.AUTH_PASSWORD) : ''
-      console.log(auth)
-      // const config = process.env.HAS_AUTH ? { config: { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } } } : null
-      this.$http.post(process.env.AUTH_API_URL + provider, response, { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } }).then(response => {
+      const auth = process.env.HAS_AUTH ? { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } } : null
+      // console.log(auth)
+      this.$http.post(process.env.AUTH_API_URL + provider, response, auth).then(response => {
         const user = response.data
         this.$store.dispatch('user/storeUser', user)
         this.$q.sessionStorage.set('auth_provider', provider)
