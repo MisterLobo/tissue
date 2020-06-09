@@ -40,7 +40,7 @@ export default {
       const auth = process.env.HAS_AUTH ? 'Authorization: Basic ' + btoa(process.env.AUTH_USER + ':' + process.env.AUTH_PASSWORD) : ''
       console.log(auth)
       // const config = process.env.HAS_AUTH ? { config: { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } } } : null
-      this.$http.post(process.env.AUTH_API_URL + provider, response, { headers: auth }).then(response => {
+      this.$http.post(process.env.AUTH_API_URL + provider, response, { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } }).then(response => {
         const user = response.data
         this.$store.dispatch('user/storeUser', user)
         this.$q.sessionStorage.set('auth_provider', provider)
