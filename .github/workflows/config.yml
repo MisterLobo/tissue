@@ -33,6 +33,9 @@ jobs:
       - run: npm i -g @quasar/cli
       - run: npm i -g firebase-tools
       - run: yarn
+      - run: quasar test --unit ava
+      - run: quasar test --e2e cypress
+      - run: yarn run test:e2e:CI
       - run: ls -al
       - run: chmod +x ./scripts/devenv.sh
       - run: DEV_GPG_SECRET=${{ secrets.DEV_GPG_SECRET }} ./scripts/devenv.sh #gpg --quiet --batch --yes --decrypt --passphrase=${{ secrets.DEV_GPG_SECRET }} --output ./devenv devenv.gpg
