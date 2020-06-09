@@ -37,6 +37,10 @@ jobs:
       - run: ./scripts/build.sh $(cat devenv) #build the project
       - run: rm -rf public
       - run: cp -r dist/spa public
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Public
+          path: public
       - run: ls -al
       - run: pwd
       - run: cd public
