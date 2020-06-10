@@ -9,7 +9,10 @@ if (fs.existsSync('./.babelrc')) {
   extend = './.babelrc'
 }
 
-const plugins = []
+const plugins = [
+  '@babel/plugin-proposal-export-default-from',
+  '@babel/plugin-syntax-export-default-from'
+]
 if (process.env.QUASAR_APP_TEST) {
   // Add aliases if testing
   plugins.push([
