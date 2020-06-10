@@ -9,6 +9,12 @@ on:
     paths:
       - '.github/**'
       - 'scripts/**'
+      - 'tests/**'
+      - '*.js'
+      - '.*rc'
+      - '*.json'
+      - '*.gpg'
+      - 'yarn.lock'
       - '!src/**'
 
 jobs:
