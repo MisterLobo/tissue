@@ -39,8 +39,12 @@ jobs:
       - run: npm i -g @quasar/cli
       - run: npm i -g firebase-tools
       - run: yarn
-      - run: quasar test --unit ava
-      - run: quasar test --e2e cypress
+      - name: Run unit tests with AVA
+        run: quasar test --unit ava
+      - name: Run unit tests with JEST
+        run: quasar test --unit jest
+      - name: Run e2e tests with CYPRESS
+        run: quasar test --e2e cypress
       - run: npm run test:unit:coverage
       - run: ls -al
       - run: chmod +x ./scripts/devenv.sh
