@@ -44,3 +44,6 @@ env
 devenv
 demoenv
 dotenv
+
+/test/jest/coverage
+/test/lighthouse/reports
