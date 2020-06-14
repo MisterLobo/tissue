@@ -18,17 +18,17 @@
             <q-menu anchor="bottom right" self="top right" :offset="[0, 20]">
               <q-item clickable>
                 <q-item-section>
-                  <q-item-label>Project</q-item-label>
+                  <q-item-label>Organization</q-item-label>
                   <q-item-label caption lines="2">Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item clickable>
                 <q-item-section>
-                  <q-item-label>Team</q-item-label>
+                  <q-item-label>Project</q-item-label>
                   <q-item-label caption lines="2">Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item clickable>
+              <q-item clickable @click="newIssue">
                 <q-item-section>
                   <q-item-label>Issue</q-item-label>
                   <q-item-label caption lines="2">Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
@@ -36,10 +36,10 @@
               </q-item>
             </q-menu>
           </q-btn>
-          <q-btn round dense flat icon="mdi-alert-circle-outline" v-if="$q.screen.gt.sm" :to="{ name: 'myCart' }" exact>
+          <q-btn round dense flat icon="mdi-alert-circle-outline" v-if="$q.screen.gt.sm" :to="{ name: 'home' }" exact>
             <q-tooltip>Issues</q-tooltip>
           </q-btn>
-          <q-btn round dense flat icon="message" v-if="$q.screen.gt.sm" :to="{ name: 'chat' }" exact>
+          <q-btn round dense flat icon="message" v-if="$q.screen.gt.sm" :to="{ name: 'home' }" exact>
             <q-tooltip>Messages</q-tooltip>
           </q-btn>
           <div>
@@ -53,7 +53,7 @@
           <q-space />
           <q-btn round flat>
             <q-avatar size="26px">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+              <img :src="getUser.avatar">
             </q-avatar>
             <q-tooltip>Account</q-tooltip>
             <q-menu anchor="bottom right" self="top right" :offset="[0, 20]">
@@ -89,7 +89,7 @@
       <!-- drawer content -->
     </q-drawer>
 
-    <q-drawer show-if-above v-model="right" side="right" bordered>
+    <q-drawer show-if-above v-model="right" side="right" bordered behavior="mobile">
       <q-list class="absolute-top" style="height: 50px">
         <q-item>
           <q-item-section>
@@ -120,7 +120,18 @@
     <q-page-container>
       <router-view />
     </q-page-container>
-
+    <q-dialog ref="createIssueDlg" @hide="onDialogHide">
+      <q-card class="q-dialog-plugin">
+        <q-card-section>
+          <q-input v-model="issue.title" label="Issue Title" />
+          <q-input type="textarea" v-model="issue.description" label="Issue Description" />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn color="primary" label="OK" @click="onOKClick" />
+          <q-btn color="primary" label="Cancel" @click="onCancelClick" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -138,7 +149,7 @@ export default {
     // Return a Promise if you are running an async job
     // Example:
     if (store.getters['user/isAuthenticated'] === false && store.getters['user/isChecked'] === false) {
-      console.log('second')
+      // console.log('second')
       console.log('Not logged in. Redirecting ..')
       return redirect('/login')
     }
@@ -162,9 +173,47 @@ export default {
       left: false,
       right: false,
       scroll: true
+    },
+    issue: {
+      title: '',
+      description: ''
     }
   }),
   methods: {
+    // following method is REQUIRED
+    // (don't change its name --> "show")
+    show () {
+      this.$refs.createIssueDlg.show()
+    },
+
+    // following method is REQUIRED
+    // (don't change its name --> "hide")
+    hide (dlg) {
+      this.$refs[dlg].hide()
+    },
+    onDialogHide () {
+      // required to be emitted
+      // when QDialog emits "hide" event
+      this.$emit('hide')
+    },
+
+    onOKClick () {
+      // on OK, it is REQUIRED to
+      // emit "ok" event (with optional payload)
+      // before hiding the QDialog
+      this.$emit('ok')
+      // or with payload: this.$emit('ok', { ... })
+
+      // then hiding dialog
+      this.hide('createIssueDlg')
+      // this.$store.dispatch('issue/submitIssue', this.issue)
+      this.$router.push({ name: 'new-issue' })
+    },
+
+    onCancelClick () {
+      // we just need to hide dialog
+      this.hide('createIssueDlg')
+    },
     onLeft ({ reset }) {
       this.$q.notify('Left action triggered. Resetting in 1 second.')
       this.finalize(reset)
@@ -173,6 +222,12 @@ export default {
       this.timer = setTimeout(() => {
         reset()
       }, 1000)
+    },
+    showCreateIssueDialog () {
+      this.$refs.createIssueDlg.show()
+    },
+    newIssue () {
+      this.$router.push({ name: 'new-issue' })
     }
   }
 }
