@@ -49,6 +49,7 @@
     "@babel/plugin-syntax-export-default-from": "^7.10.1",
     "@quasar/app": "^1.6.2",
     "@quasar/quasar-app-extension-dotenv": "^1.0.1",
+    "@quasar/quasar-app-extension-qmarkdown": "^1.0.28",
     "@quasar/quasar-app-extension-testing": "^1.0.0",
     "@quasar/quasar-app-extension-testing-e2e-cypress": "^1.0.0-beta.11",
     "@quasar/quasar-app-extension-testing-quality": "^1.0.0-beta.8",
@@ -71,6 +72,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.1.2",
     "majestic": "^1.2.24",
+    "prosemirror-utils": "^0.9.6",
     "vue-jest": "^3.0.0",
     "wallaby-vue-compiler": "^1.0.3"
   },

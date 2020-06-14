@@ -5,7 +5,24 @@ const routes: RouteConfig[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
+      { path: '', name: 'home', component: () => import('pages/Index.vue') },
+      {
+        path: 'issues',
+        name: 'issues',
+        component: () => import('pages/IssuesPage.vue'),
+        children: [
+          { path: 'list', component: () => import('components/IssuesComponent.vue') },
+          { path: 'new', name: 'new-issue', component: () => import('components/CreateIssueComponent.vue') }
+        ]
+      },
+      {
+        path: ':project/issues',
+        name: 'project-issues',
+        component: () => import('pages/IssuesPage.vue'),
+        children: [
+          { path: ':issueId', name: 'issue-thread', component: () => import('components/IssueThreadComponent.vue') }
+        ]
+      }
     ]
   },
   {

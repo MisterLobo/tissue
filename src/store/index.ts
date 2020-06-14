@@ -2,7 +2,7 @@ import { store } from 'quasar/wrappers'
 import Vuex from 'vuex'
 
 import user from './user-module'
-// import { ExampleStateInterface } from './module-example/state';
+import issue from './issue-module'
 
 /*
  * If not building with SSR mode, you can
@@ -21,7 +21,8 @@ export default store(function ({ Vue }) {
 
   const Store = new Vuex.Store<StoreInterface>({
     modules: {
-      user
+      user,
+      issue
     },
 
     // enable strict mode (adds overhead!)
