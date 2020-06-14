@@ -34,4 +34,4 @@ See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
 ### Quasar Installation Guide
 See https://quasar.dev/quasar-cli/installation
 
-[Site Demo](https://demo.tissueapp.xyz)
+[Live Demo](https://demo.tissueapp.xyz)
