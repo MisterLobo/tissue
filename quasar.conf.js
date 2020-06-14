@@ -9,6 +9,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/camelcase */
 const { configure } = require('quasar/wrappers')
+// const path = require('path')
 
 module.exports = configure(function (ctx) {
   return {
@@ -21,7 +22,10 @@ module.exports = configure(function (ctx) {
       'i18n',
       'axios',
       'check-auth',
-      'social-auth-provider'
+      'social-auth-provider',
+      'init-qmarkdown',
+      'quasar-tiptap',
+      'add-colors'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -45,6 +49,9 @@ module.exports = configure(function (ctx) {
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
+      config: {
+        dark: 'false' // or Boolean true/false
+      },
       iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
 
@@ -57,8 +64,38 @@ module.exports = configure(function (ctx) {
       //            (not treeshaking Quasar; biggest bundle size; convenient)
       all: 'auto',
 
-      components: [],
-      directives: [],
+      components: [
+        'QLayout',
+        'QHeader',
+        'QDrawer',
+        'QPageContainer',
+        'QPage',
+        'QToolbar',
+        'QToolbarTitle',
+        'QTooltip',
+        'QBtn',
+        'QBtnDropdown',
+        'QBtnToggle',
+        'QIcon',
+        'QList',
+        'QItem',
+        'QExpansionItem',
+        'QItemSection',
+        'QItemLabel',
+        'QScrollArea',
+        'QSeparator',
+        'QMenu',
+        'QAvatar',
+        'QColor',
+        'QInput',
+        'QToggle',
+        'QSpinner',
+        'QScrollObserver'
+      ],
+      directives: [
+        'Ripple',
+        'ClosePopup'
+      ],
 
       // Quasar plugins
       plugins: [
@@ -69,7 +106,8 @@ module.exports = configure(function (ctx) {
         'LocalStorage',
         'SessionStorage',
         'Meta',
-        'Notify'
+        'Notify',
+        'AppFullscreen'
       ]
     },
 
