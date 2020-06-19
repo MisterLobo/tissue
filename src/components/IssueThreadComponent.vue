@@ -125,7 +125,7 @@ export default {
     this.labels = labels
     this.assignees = assignees
     this.participants = participants
-    console.log(this.issue, this.author, this.thread, this.comments, this.project)
+    // console.log(this.issue, this.author, this.thread, this.comments, this.project)
   },
   data: () => ({
     tab: 'write',
@@ -206,9 +206,9 @@ export default {
       // console.log(com)
       // this.thread.comments.push(createComment({ id: this.getComments.length + 1, authorId: this.user.id, body: this.comment.body, createdOn: new Date(), updatedOn: new Date() }))
       this.$store.dispatch('issue/storeComment', { owner: this.author.display_name, project: this.project.slug, issueId: this.issue.id, com }).then(r => {
-        console.log(r)
+        // console.log(r)
         this.comments = r.comments
-        console.log(this.comments)
+        // console.log(this.comments)
       })
       // const thd = Object.create(this.thread)
       // this.$store.dispatch('issue/storeThread', Object.assign({}, thd))

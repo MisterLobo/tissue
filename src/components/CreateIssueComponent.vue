@@ -356,7 +356,7 @@ export default {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     factoryFn (files) {
       // returning a Promise
-      console.log(Cookies.get('XSRF-TOKEN'))
+      // console.log(Cookies.get('XSRF-TOKEN'))
       return new Promise((resolve) => {
         // simulating a delay of 2 seconds
         setTimeout(() => {
@@ -412,7 +412,7 @@ export default {
       }
       else {
         const issue = Object.assign({}, this.issue, { status: 'open', projectId: this.project.id, userId: this.getUser.id, projectRef: this.project })
-        console.log(this.project)
+        // console.log(this.project)
         const data = createIssue(issue)
         // eslint-disable-next-line @typescript-eslint/camelcase
         data.project_id = this.project.id
