@@ -23,8 +23,8 @@ export function authenticateUser (context, { email, name, token, accessToken }) 
     }
     const xsrf = Cookies.get('XSRF-TOKEN')
     const atoken = SessionStorage.getItem('access_token')
-    // console.log('atoken: ', atoken)
-    // console.log('xsrf: ', xsrf)
+    console.log('atoken: ', atoken)
+    console.log('xsrf: ', xsrf)
     const headers = { Authorization: `Bearer ${SessionStorage.getItem('access_token')}` }
     // return axios.post('/api/login', payload)
     // const headers = { Authorization: `Bearer ${Cookies.get('XSRF-TOKEN')}` }
@@ -53,7 +53,7 @@ export function fetchUser ({ commit }, { provider, userToken }) {
   // const userToken = SessionStorage.getItem('user_token')
   // const csrfToken = Cookies.get('XSRF-TOKEN')
   const auth = process.env.HAS_AUTH === true ? { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } : null
-  // console.log(auth)
+  console.log(auth)
   const headers = { Authorization: `Bearer ${userToken}` }
   return axios.post(`/social/getuser/${provider}`, { token: userToken }, { headers })
     .then(response => {
