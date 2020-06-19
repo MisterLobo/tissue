@@ -8,5 +8,7 @@ declare module 'vue/types/vue' {
 }
 
 export default boot(({ Vue }) => {
+  axios.defaults.withCredentials = true
+  axios.defaults.baseURL = process.env.API_URL
   Vue.prototype.$axios = axios
 })
