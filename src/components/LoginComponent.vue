@@ -21,7 +21,12 @@ export default {
     })
   },
   methods: {
-
+    authenticate (data) {
+      this.$store.dispatch('user/authenticateUser', data).then((r) => {
+        console.log(r)
+        this.$router.push('/').catch(e => console.log({ e }))
+      }).catch(e => console.error(e))
+    },
     AuthProvider (provider) {
       if (process.env.DEV) {
         console.log(process.env.NODE_ENV)
@@ -32,22 +37,24 @@ export default {
       this.$auth.authenticate(provider).then(response => {
         this.SocialLogin(provider, response)
       }).catch(err => {
-        console.log({ err: err })
+        console.error(err)
       })
     },
 
     SocialLogin (provider, response) {
-      const auth = process.env.HAS_AUTH ? { auth: { username: process.env.AUTH_USER, password: process.env.AUTH_PASSWORD } } : null
-      // console.log(auth)
-      this.$http.post(process.env.AUTH_API_URL + provider, response, auth).then(response => {
-        const user = response.data
-        this.$store.dispatch('user/storeUser', user)
-        this.$q.sessionStorage.set('auth_provider', provider)
-        this.$q.sessionStorage.set('user_token', user.token)
-        this.$router.push('/')
-      }).catch(err => {
-        console.log({ err: err })
-      })
+      this.$store.dispatch('user/authenticateSocialUser', { provider, preAuth: response }).then((u, a) => {
+        console.log(u)
+        // this.authenticate(provider, { email: u.email, name: u.name, token: u.token })
+        this.$store.dispatch('user/storeUser', u).catch(e => console.error(e))
+        const data = {
+          email: u.email,
+          name: u.name,
+          accessToken: a,
+          token: u.token
+        }
+        this.authenticate(data)
+        // this.$router.push('/').catch(e => console.log({ e }))
+      }).catch(e => console.error(e))
     }
 
   }

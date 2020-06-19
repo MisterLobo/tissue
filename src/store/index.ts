@@ -3,6 +3,9 @@ import Vuex from 'vuex'
 
 import user from './user-module'
 import issue from './issue-module'
+import project from './project-module'
+import comment from './comment-module'
+import thread from './issuethread-module'
 
 /*
  * If not building with SSR mode, you can
@@ -22,7 +25,10 @@ export default store(function ({ Vue }) {
   const Store = new Vuex.Store<StoreInterface>({
     modules: {
       user,
-      issue
+      issue,
+      project,
+      comment,
+      thread
     },
 
     // enable strict mode (adds overhead!)

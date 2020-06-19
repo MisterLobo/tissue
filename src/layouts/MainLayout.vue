@@ -16,24 +16,24 @@
           <q-btn round dense flat icon="add" v-if="$q.screen.gt.sm">
             <q-tooltip>Create</q-tooltip>
             <q-menu anchor="bottom right" self="top right" :offset="[0, 20]">
-              <q-item clickable>
+              <q-item clickable @click="newOrg">
                 <q-item-section>
                   <q-item-label>Organization</q-item-label>
-                  <q-item-label caption lines="2">Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
+                  <q-item-label caption lines="2">Organization can contain Projects shared among its members</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item clickable>
+              <q-item clickable @click="newProject">
                 <q-item-section>
                   <q-item-label>Project</q-item-label>
-                  <q-item-label caption lines="2">Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
+                  <q-item-label caption lines="2">A Project is a representation of a git repository</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item clickable @click="newIssue">
+              <!--<q-item clickable @click="newIssue">
                 <q-item-section>
                   <q-item-label>Issue</q-item-label>
-                  <q-item-label caption lines="2">Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
+                  <q-item-label caption lines="2">Create an Issue to start a discussion about a Project</q-item-label>
                 </q-item-section>
-              </q-item>
+              </q-item>-->
             </q-menu>
           </q-btn>
           <q-btn round dense flat icon="mdi-alert-circle-outline" v-if="$q.screen.gt.sm" :to="{ name: 'home' }" exact>
@@ -64,13 +64,13 @@
                 </q-item-section>
               </q-item>
               <q-item clickable>
-                <q-item-section>My Profile</q-item-section>
+                <q-item-section>Your Profile</q-item-section>
+              </q-item>
+              <q-item clickable @click="yourProjects">
+                <q-item-section>Your Projects</q-item-section>
               </q-item>
               <q-item clickable>
-                <q-item-section>My Projects</q-item-section>
-              </q-item>
-              <q-item clickable>
-                <q-item-section>My Teams</q-item-section>
+                <q-item-section>Your Teams</q-item-section>
               </q-item>
               <q-item clickable>
                 <q-item-section>Account Settings</q-item-section>
@@ -226,8 +226,17 @@ export default {
     showCreateIssueDialog () {
       this.$refs.createIssueDlg.show()
     },
+    yourProjects () {
+      this.$router.push({ name: 'your-projects', params: { owner: this.getUser.nickname } })
+    },
     newIssue () {
       this.$router.push({ name: 'new-issue' })
+    },
+    newProject () {
+      this.$router.push({ name: 'new-project', params: { owner: this.getUser.nickname } })
+    },
+    newOrg () {
+      //
     }
   }
 }

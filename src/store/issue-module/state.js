@@ -7,8 +7,14 @@ export default function () {
       comments: []
     },
     comments: [],
+    labels: [],
+    assignees: [],
+    participants: [],
     comment: null,
     voted: false,
-    vote: ''
+    vote: null,
+    author: null,
+    project: null,
+    myvotes: []
   }
 }

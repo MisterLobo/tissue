@@ -7,20 +7,57 @@ const routes: RouteConfig[] = [
     children: [
       { path: '', name: 'home', component: () => import('pages/Index.vue') },
       {
-        path: 'issues',
+        path: '/issues',
         name: 'issues',
         component: () => import('pages/IssuesPage.vue'),
         children: [
-          { path: 'list', component: () => import('components/IssuesComponent.vue') },
           { path: 'new', name: 'new-issue', component: () => import('components/CreateIssueComponent.vue') }
         ]
       },
       {
-        path: ':project/issues',
-        name: 'project-issues',
+        path: '/:owner/:project',
+        component: () => import('pages/ProjectsPage.vue'),
+        children: [
+          { path: '', name: 'project-view', component: () => import('components/ProjectComponent.vue') },
+          // { path: 'issue/:issueId', name: 'issue-thread', component: () => import('components/IssueThreadComponent.vue') },
+          { path: 'new-issue', name: 'new-project-issue', component: () => import('components/CreateIssueComponent.vue') }
+        ]
+      },
+      {
+        path: '/:owner/:project/issues',
         component: () => import('pages/IssuesPage.vue'),
         children: [
+          { path: '', name: 'project-issues', component: () => import('components/IssuesComponent.vue') },
           { path: ':issueId', name: 'issue-thread', component: () => import('components/IssueThreadComponent.vue') }
+        ]
+      },
+      {
+        path: '/:owner/projects',
+        component: () => import('pages/ProjectsPage.vue'),
+        children: [
+          { path: '', redirect: { name: 'your-projects' } },
+          { path: 'all', name: 'your-projects', component: () => import('components/ProjectsComponent.vue') },
+          { path: 'new', name: 'new-project', component: () => import('components/CreateProjectComponent.vue') }
+          // { path: ':project', component: () => import('components/ProjectComponent.vue') }
+        ]
+      },
+      /* {
+        path: ':owner/projects/new',
+        component: () => import('pages/ProjectsPage.vue'),
+        // name: 'your-projects',
+        children: [
+          // { path: '', name: 'your-projects', component: () => import('components/ProjectsComponent.vue') },
+          { path: 'new', name: 'new-project', component: () => import('components/CreateProjectComponent.vue') }
+          // { path: ':project', component: () => import('components/ProjectComponent.vue') }
+        ]
+      }, */
+      {
+        path: '/projects',
+        component: () => import('pages/ProjectsPage.vue'),
+        children: [
+          { path: '', name: 'projects', component: () => import('components/ProjectsComponent.vue') }
+          // { path: 'new', name: 'new-project', component: () => import('components/CreateProjectComponent.vue') }
+          // { path: ':project', component: () => import('components/ProjectComponent.vue') }
         ]
       }
     ]

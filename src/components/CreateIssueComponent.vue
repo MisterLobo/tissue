@@ -2,7 +2,7 @@
   <div class="justify-center" style="width: 70%">
     <q-card class="my-card">
       <q-card-section>
-        <div class="text-h6 q-mb-xs">{{ issue ? (issue.title ? issue.title : 'New Issue') : 'New Issue' }}{{ project ? ` - ${project.label}` : '' }}</div>
+        <div class="text-h6 q-mb-xs">{{ issue ? (issue.title ? issue.title : 'New Issue') : 'New Issue' }}{{ project ? ` - ${project.title}` : '' }}</div>
         <q-form
           @submit="onSubmit"
           @reset="onReset"
@@ -13,7 +13,7 @@
             v-model="issue.title"
             label="Title"
           />
-          <q-select
+          <!--<q-select
             filled
             v-model="project"
             use-input
@@ -34,7 +34,7 @@
                 </q-item-section>
               </q-item>
             </template>
-          </q-select>
+          </q-select>-->
           <q-select
             filled
             v-model="issue.labels"
@@ -127,6 +127,7 @@
 <script>
 import { createIssue, createProject, createLabel } from '../models'
 import { mapGetters } from 'vuex'
+import { Cookies, SessionStorage } from 'quasar'
 
 let dummyProjects = [
   createProject({
@@ -165,6 +166,7 @@ let dummyProjects = [
 
 export default {
   name: 'CreateIssueComponent',
+  // props: ['project'],
   preFetch ({ store, /* currentRoute, previousRoute, */ redirect }) {
     // fetch data, validate route and optionally redirect to some other route...
 
@@ -176,7 +178,7 @@ export default {
     // Return a Promise if you are running an async job
     // Example:
     if (store.getters['user/isAuthenticated'] === false && store.getters['user/isChecked'] === false) {
-      console.log('second')
+      // console.log('second')
       console.log('Not logged in. Redirecting ..')
       return redirect('/login')
     }
@@ -184,7 +186,7 @@ export default {
   },
   created () {
     this.apiUrl = process.env.API_URL
-    this.issueAttachmentsEndpoint = `${this.apiUrl}/upload`
+    this.issueAttachmentsEndpoint = `${this.apiUrl}/api/upload`
     this.assignees = [
       {
         label: `Assign yourself (${this.getUser.name})`,
@@ -225,6 +227,8 @@ export default {
         ownerType: 'user'
       })
     ]
+    this.project = this.getProject
+    console.log(this.project)
   },
   mounted () {
     // this.$o.lang.set('en-us')
@@ -337,7 +341,8 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      getUser: 'user/getUserState'
+      getUser: 'user/getUserState',
+      getProject: 'project/getProject'
     }),
     isUploading () {
       return this.uploading !== null
@@ -351,12 +356,17 @@ export default {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     factoryFn (files) {
       // returning a Promise
-
+      console.log(Cookies.get('XSRF-TOKEN'))
       return new Promise((resolve) => {
         // simulating a delay of 2 seconds
         setTimeout(() => {
           resolve({
-            url: this.issueAttachmentsEndpoint
+            url: this.issueAttachmentsEndpoint,
+            headers: [
+              { name: 'X-XSRF-TOKEN', value: `${Cookies.get('XSRF-TOKEN')}` },
+              { name: 'Authorization', value: `Bearer ${SessionStorage.getItem('access_token')}` },
+              { name: 'laravel_session', value: `${Cookies.get('laravel_session')}` }
+            ]
           })
         }, 100)
       })
@@ -402,13 +412,25 @@ export default {
       }
       else {
         const issue = Object.assign({}, this.issue, { status: 'open', projectId: this.project.id, userId: this.getUser.id, projectRef: this.project })
-        this.$store.dispatch('issue/storeIssue', createIssue(issue))
-        this.$router.push({ name: 'issue-thread', params: { project: this.project.value, issueId: '1' } })
-        this.$q.notify({
-          color: 'green-4',
-          textColor: 'white',
-          icon: 'cloud_done',
-          message: 'Submitted'
+        console.log(this.project)
+        const data = createIssue(issue)
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        data.project_id = this.project.id
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        data.author_id = this.getUser.id
+        data.participants = [this.getUser.id]
+        this.$store.dispatch('issue/storeIssue', { data, owner: this.project.owner.display_name, projectName: this.project.slug }).then(({ issue, thread, project }) => {
+          console.log(issue)
+          console.log(thread)
+          console.log(project)
+          this.$store.dispatch('project/viewProject', project)
+          this.$router.push({ name: 'issue-thread', params: { project: this.project.slug, issueId: issue.id } })
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Submitted'
+          })
         })
       }
     },
