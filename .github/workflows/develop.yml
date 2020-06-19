@@ -44,8 +44,6 @@ jobs:
       - run: rm -rf public
       - run: ls -al
       - run: pwd
-      - run: cd ..
-      - run: ls -al
       - name: Run unit tests with AVA
         run: quasar test --unit ava
       - name: Run unit tests with JEST
@@ -65,7 +63,7 @@ jobs:
           args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      - run: Deployment Successful!
+      - run: echo Deployment Successful!
       - uses: actions/upload-artifact@v2
         with:
           name: Development Build
