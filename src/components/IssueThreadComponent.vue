@@ -2,9 +2,9 @@
   <div class="justify-center" style="width: 70%">
     <q-card class="my-card">
       <q-card-section>
-        <div class="text-h3 q-mb-xs">{{ issue.projectRef.label }} / Issues</div>
+        <div class="text-h3 q-mb-xs">{{ getProject.title }} / Issues</div>
         <div class="text-h5 q-mb-xs">{{ issue.title }} #{{ issue.id }} <q-badge :label="issue.status" color="green" align="middle" /> </div>
-        <q-chip v-bind:key="label.label" v-for="label in issue.labels" color="bug" text-color="black">
+        <q-chip v-bind:key="label.label" v-for="label in labels" color="bug" text-color="black">
           {{ label.label }}
         </q-chip>
         <q-timeline color="secondary">
@@ -17,12 +17,12 @@
             <comment-component :author="getUser.name" :data="thread.description"></comment-component>
           </q-timeline-entry>-->
 
-          <q-timeline-entry v-for="cmt in thread.comments" v-bind:key="cmt.id" avatar="https://cdn.quasar.dev/img/avatar5.jpg">
+          <q-timeline-entry v-for="cmt in comments" v-bind:key="cmt.id" :avatar="cmt.author.avatar">
             <template v-slot:subtitle>
-              {{ cmt.updatedOn.toDateString() }} by {{ cmt.authorName }}
+              {{ parseDate(cmt.updated_at) }} by {{ cmt.author.display_name }}
             </template>
 
-            <comment-component :author="cmt.authorName" :data="cmt"></comment-component>
+            <comment-component :data="cmt"></comment-component>
           </q-timeline-entry>
         </q-timeline>
         <q-form
@@ -66,6 +66,7 @@
             </q-tab-panel>
           </q-tab-panels>
           <q-uploader
+            ref="attachments"
             label="Attach files"
             auto-upload
             :url="issueAttachmentsEndpoint"
@@ -86,8 +87,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { createComment, createThread, createUser } from '../models'
+// import { createComment } from '../models'
 import CommentComponent from './CommentComponent'
+import { Cookies, SessionStorage } from 'quasar'
 
 export default {
   name: 'IssueThreadComponent',
@@ -112,55 +114,32 @@ export default {
     CommentComponent
   },
   created () {
-    this.user = createUser(this.getUser)
     this.apiUrl = process.env.API_URL
-    this.issueAttachmentsEndpoint = `${this.apiUrl}/upload`
-    this.issue = Object.assign({}, this.getIssue)
-    // console.log(this.issue)
-    const comment = createComment({ id: this.getComments.length + 1, authorId: this.user.id, authorName: this.user.name, body: this.issue.body, upVotes: 0, downVotes: 0, myVote: '', hasVoted: false, createdOn: new Date(), updatedOn: new Date() })
-    this.thread = {
-      id: 1,
-      author: this.user.id,
-      description: Object.assign({}, comment),
-      status: 'unlocked',
-      createdOn: new Date(),
-      updatedOn: new Date(),
-      comments: [
-        comment
-      ],
-      assignees: this.issue.assignees,
-      labels: this.issue.labels,
-      issueRef: this.issue,
-      participants: [this.user.id]
-    }
-    const thread = createThread(this.thread)
-    this.$store.dispatch('issue/storeThread', thread)
-    this.$store.dispatch('issue/addComment', comment)
-    console.log(this.thread)
-    // console.log(this.user)
+    this.issueAttachmentsEndpoint = `${this.apiUrl}/api/upload`
+    this.issue = this.getIssue
+    this.author = this.getAuthor
+    this.thread = this.getThread
+    this.comments = this.getComments
+    this.project = this.getProject
+    const { labels, assignees, participants } = this.getMeta
+    this.labels = labels
+    this.assignees = assignees
+    this.participants = participants
+    console.log(this.issue, this.author, this.thread, this.comments, this.project)
   },
   data: () => ({
     tab: 'write',
-    issue: {
-      title: 'New Issue',
-      description: '',
-      body: '',
-      labels: [],
-      assignees: [],
-      severity: '',
-      project: null
-    },
+    issue: null,
     thread: null,
-    user: null,
+    author: null,
+    project: null,
+    comments: [],
     comment: {
       body: ''
     },
-    project: {
-      label: 'Google',
-      value: 'Google',
-      description: 'Search engine',
-      category: '1'
-    },
+    labels: [],
+    assignees: [],
+    participants: [],
     files: null,
     uploadProgress: [],
     uploading: null,
@@ -172,7 +151,10 @@ export default {
       getUser: 'user/getUserState',
       getIssue: 'issue/getCreatedIssue',
       getThread: 'issue/getIssueThread',
-      getComments: 'issue/getThreadComments'
+      getComments: 'issue/getThreadComments',
+      getProject: 'project/getProject',
+      getAuthor: 'issue/getAuthor',
+      getMeta: 'issue/getMeta'
     }),
     isUploading () {
       return this.uploading !== null
@@ -184,14 +166,28 @@ export default {
   },
   methods: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getCommenter (a) {
+      const auth = Object.assign({}, a)
+      return auth
+    },
+    parseDate (d) {
+      // console.log(d)
+      return new Date(d).toDateString()
+    },
     factoryFn (files) {
+      this.files = files
       // returning a Promise
 
       return new Promise((resolve) => {
         // simulating a delay of 2 seconds
         setTimeout(() => {
           resolve({
-            url: this.issueAttachmentsEndpoint
+            url: this.issueAttachmentsEndpoint,
+            headers: [
+              { name: 'X-XSRF-TOKEN', value: `${Cookies.get('XSRF-TOKEN')}` },
+              { name: 'Authorization', value: `Bearer ${SessionStorage.getItem('access_token')}` },
+              { name: 'laravel_session', value: `${Cookies.get('laravel_session')}` }
+            ]
           })
         }, 100)
       })
@@ -201,20 +197,25 @@ export default {
       const response = JSON.parse(xhr.response)
       const file = files[0]
       const { data } = response
-      console.log(file)
-      console.log(data)
+      // console.log(file)
+      // console.log(data)
       this.comment.body += `\n[${file.name}](${data})`
     },
     onSubmit () {
-      const com = createComment({ id: this.getComments.length + 1, authorId: this.user.id, authorName: this.user.name, body: this.comment.body, upVotes: 0, downVotes: 0, myVote: '', createdOn: new Date(), updatedOn: new Date() })
-      console.log(com)
+      const com = this.comment.body // createComment({ authorId: this.getUser.id, authorName: this.getUser.name, body: this.comment.body, upVotes: 0, downVotes: 0, myVote: '', createdOn: new Date(), updatedOn: new Date() })
+      // console.log(com)
       // this.thread.comments.push(createComment({ id: this.getComments.length + 1, authorId: this.user.id, body: this.comment.body, createdOn: new Date(), updatedOn: new Date() }))
-      this.$store.dispatch('issue/addComment', Object.assign({}, com))
-      const thd = Object.create(this.thread)
-      this.$store.dispatch('issue/storeThread', Object.assign({}, thd))
-      this.thread.comments = this.getComments
-      console.log(this.thread)
+      this.$store.dispatch('issue/storeComment', { owner: this.author.display_name, project: this.project.slug, issueId: this.issue.id, com }).then(r => {
+        console.log(r)
+        this.comments = r.comments
+        console.log(this.comments)
+      })
+      // const thd = Object.create(this.thread)
+      // this.$store.dispatch('issue/storeThread', Object.assign({}, thd))
+      // this.thread.comments = this.getComments
+      // console.log(this.thread)
       this.comment.body = ''
+      this.$refs.attachments.reset()
     },
 
     onReset () {
@@ -246,50 +247,6 @@ export default {
             )
           )
       }))
-    },
-
-    upload () {
-      clearTimeout(this.uploading)
-
-      const allDone = this.uploadProgress.every(progress => progress.percent === 1)
-
-      this.uploadProgress = this.uploadProgress.map(progress => ({
-        ...progress,
-        error: false,
-        color: 'green-2',
-        percent: allDone === true ? 0 : progress.percent
-      }))
-
-      this.__updateUploadProgress()
-    },
-
-    __updateUploadProgress () {
-      let done = true
-
-      this.uploadProgress = this.uploadProgress.map(progress => {
-        if (progress.percent === 1 || progress.error === true) {
-          return progress
-        }
-
-        const percent = Math.min(1, progress.percent + Math.random() / 10)
-        const error = percent < 1 && Math.random() > 0.95
-
-        if (error === false && percent < 1 && done === true) {
-          done = false
-        }
-
-        return {
-          ...progress,
-          error,
-          color: error === true ? 'red-2' : 'green-2',
-          percent
-        }
-      })
-
-      this.uploading = done !== true
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        ? setTimeout(this.__updateUploadProgress, 300)
-        : null
     }
   }
 }

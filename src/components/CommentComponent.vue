@@ -5,8 +5,8 @@
         <!--<div class="text-overline">{{ name }}</div>-->
         <div class="text-caption text-grey">
         </div>
-        <q-markdown v-if="comment.body"
-                    :src="comment.body"
+        <q-markdown v-if="comment.content"
+                    :src="comment.content"
                     class="fit bordered q-pa-sm wrap-sm"
         >
         </q-markdown>
@@ -16,15 +16,14 @@
     <q-separator />
 
     <q-card-actions>
-      <q-btn flat icon="thumb_up" label="Like" @click="upVote" />
-      <q-btn flat icon="thumb_down" label="Dislike" @click="downVote" />
-      <q-space/><q-icon name="thumb_up"/>&nbsp;{{ comment.upVotes || 0 }}&nbsp;<q-icon name="thumb_down"/>&nbsp;{{ comment.downVotes || 0 }}
+      <q-btn flat icon="thumb_up" label="Like" @click="upVote" :color="vote === 'up' ? 'blue' : ''" />
+      <q-btn flat icon="thumb_down" label="Dislike" @click="downVote" :color="vote === 'down' ? 'blue' : ''" />
+      <q-space/><q-icon name="thumb_up"/>&nbsp;{{ comment.upvotes || 0 }}&nbsp;<q-icon name="thumb_down"/>&nbsp;{{ comment.downvotes || 0 }}
     </q-card-actions>
   </q-card>
 </template>
 
 <script>
-import { createComment } from '../models'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -38,7 +37,9 @@ export default {
       getUser: 'user/getUserState',
       getIssue: 'issue/getCreatedIssue',
       getThread: 'issue/getIssueThread',
-      getComments: 'issue/getThreadComments'
+      getComment: 'issue/getComment',
+      getProject: 'project/getProject',
+      getMyVotes: 'issue/getMyVotes'
     }),
     isUploading () {
       return this.uploading !== null
@@ -51,40 +52,54 @@ export default {
   created () {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     // const cmt = createComment(this.data)
-    // this.$store.dispatch('issue/storeComment', cmt)
+    // this.$store.dispatch('issue/storeComment', Object.assign({}, this.getData()))
+    this.comment = this.getData()
+    // console.log(this.comment)
   },
   methods: {
     upVote () {
+      // console.log(this.getIssue, this.getProject, this.getUser)
       const vote = {
-        vote: 'up',
-        commentId: this.comment.id,
-        voter: this.getUser.id
+        body: 'up',
+        issueId: this.getIssue.id,
+        voter: this.getUser.id,
+        owner: this.getProject.owner.display_name,
+        project: this.getProject.slug,
+        commentId: this.comment.id
       }
-      this.$store.dispatch('issue/addVote', vote)
-      this.comment = this.getCommentById(this.comment.id)
-      console.log(this.comment)
+      // console.log(vote)
+      this.$store.dispatch('issue/addVote', vote).then(c => {
+        this.comment = c
+        this.vote = 'up'
+      })
+      // console.log(this.comment)
     },
     downVote () {
+      // console.log(this.getIssue, this.getProject, this.getUser)
       const vote = {
-        vote: 'down',
-        commentId: this.comment.id,
-        voter: this.getUser.id
+        body: 'down',
+        issueId: this.getIssue.id,
+        voter: this.getUser.id,
+        owner: this.getProject.owner.display_name,
+        project: this.getProject.slug,
+        commentId: this.comment.id
       }
-      this.$store.dispatch('issue/addVote', vote)
-      this.comment = this.getCommentById(this.comment.id)
-      console.log(this.comment)
+      // console.log(vote)
+      this.$store.dispatch('issue/addVote', vote).then(c => {
+        this.comment = c
+        this.vote = 'down'
+      })
     },
-    getCommentById (id) {
-      const comments = this.getComments
-      const cmt = comments.filter((v) => v.id === id)
-      return cmt.length > 0 ? cmt[0] : null
+    getData () {
+      return this.data
     }
   },
   data () {
     return {
       name: this.author,
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      comment: createComment(this.data)
+      comment: null, // createComment(this.data),
+      vote: ''
     }
   }
 }
