@@ -49,6 +49,9 @@ export interface Project {
   label: string;
   value?: string;
   description?: string;
+  website?: string;
+  // eslint-disable-next-line camelcase
+  is_public?: boolean;
 }
 
 export interface IssueThread {
