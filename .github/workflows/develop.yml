@@ -44,7 +44,6 @@ jobs:
       - run: rm -rf public
       - run: ls -al
       - run: pwd
-      - run: cd public
       - run: cd ..
       - run: ls -al
       - name: Run unit tests with AVA
@@ -67,7 +66,6 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       - run: Deployment Successful!
-      - run: cp -r dist/spa public
       - uses: actions/upload-artifact@v2
         with:
           name: Development Build
