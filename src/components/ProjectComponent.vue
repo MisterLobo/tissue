@@ -159,7 +159,7 @@ export default {
     },
     viewIssueThread (iss) {
       const issue = Object.assign(iss)
-      console.log(issue)
+      // console.log(issue)
       this.$store.dispatch('issue/fetchIssue', { owner: issue.author.display_name, project: issue.project.slug, id: issue.id }).then(({ issue, thread, owner, project }) => {
         console.log(issue, thread, owner, project)
         this.$store.dispatch('issue/viewIssueThread', { issue, thread, owner, project }).then(r => {
@@ -197,7 +197,7 @@ export default {
         }
         // const project = createProject(p)
         this.$store.dispatch('project/storeProject', p).then(r => {
-          console.log(r)
+          // console.log(r)
           this.$router.push({ name: 'project-view', params: { project: p.slug } })
         }).catch(e => console.error(e))
       }
