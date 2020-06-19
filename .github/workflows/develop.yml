@@ -75,12 +75,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build ]
     steps:
+      - run: npm i -g yarn
+      - run: npm i -g @quasar/cli
+      - run: npm i -g firebase-tools
       - name: Get node modules
         uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: ${{ runner.os }}-node_modules-
+      - run: yarn
       - name: Run unit tests with AVA
         run: quasar test --unit ava
       - name: Run unit tests with JEST
