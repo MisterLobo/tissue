@@ -47,3 +47,4 @@ dotenv
 
 /test/jest/coverage
 /test/lighthouse/reports
+/src/**/__tests__
