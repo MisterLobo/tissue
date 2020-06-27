@@ -1,8 +1,22 @@
 export interface User {
   id: number;
   name: string;
+  // eslint-disable-next-line camelcase
+  display_name: string;
   email?: string;
   avatar?: string;
+  // eslint-disable-next-line camelcase
+  social_provider?: string|null;
+  // eslint-disable-next-line camelcase
+  social_user?: object|null;
+  // eslint-disable-next-line camelcase
+  social_id?: string|null;
+  // eslint-disable-next-line camelcase
+  projects_url?: string|null;
+  // eslint-disable-next-line camelcase
+  created_at?: Date|string|null;
+  // eslint-disable-next-line camelcase
+  update_at?: Date|string|null;
 }
 
 export interface Comment {
@@ -25,14 +39,17 @@ export interface Issue {
   userId: number;
   title: string;
   body?: string;
-  labels?: Array<Label>;
+  labels?: Label[];
   assignees?: number[];
-  projectId?: number;
   severity?: number;
   status?: 'open' | 'closed';
   createdOn?: Date;
   updatedOn?: Date;
-  projectRef?: Project;
+  project?: Project;
+  meta?: {
+    assignees: User[];
+    participants: User[];
+  }|null;
 }
 
 export interface Label {
@@ -52,20 +69,22 @@ export interface Project {
   website?: string;
   // eslint-disable-next-line camelcase
   is_public?: boolean;
+  issues?: Issue[];
 }
 
 export interface IssueThread {
   id: number;
-  author: number;
+  author: User|null;
   createdOn?: Date;
   updatedOn?: Date;
   status?: 'unlocked' | 'locked';
   description?: Comment;
-  comments?: Array<Comment>;
+  comments?: Comment[];
   participants?: number[];
   labels?: Array<Label>;
   assignees?: number[];
   issueRef?: Issue;
+  issue?: Issue|null;
 }
 
 export function createUser (d: object): User {

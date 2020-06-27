@@ -1,9 +1,11 @@
 <template>
-  <div class="justify-center" style="width: 70%">
-    <q-card class="my-card">
+  <div class="justify-center row" :style="$q.screen.gt.sm ? 'width: 60vw' : ''">
+    <q-card class="my-card col-lg-8" bordered flat>
       <q-card-section>
-        <div class="text-h3 q-mb-xs">{{ getProject.title }} / Issues</div>
-        <div class="text-h5 q-mb-xs">{{ issue.title }} #{{ issue.id }} <q-badge :label="issue.status" color="green" align="middle" /> </div>
+        <div class="row">
+          <div class="text-h5 q-mb-xs">{{ project.owner.display_name }} / {{ project.title }}</div> <q-space /><q-btn v-if="issue.author_id === author.id" color="red" label="Close issue"></q-btn>
+        </div>
+        <div class="text-h5 q-mb-xs">{{ issue.title }} #{{ issue.id }} <q-badge :label="issue.status" color="green" align="middle" /></div>
         <q-chip v-bind:key="label.label" v-for="label in labels" color="bug" text-color="black">
           {{ label.label }}
         </q-chip>
@@ -49,7 +51,7 @@
               <div class="text-h6">Write a comment (Markdown is supported)</div>
               <q-input
                 filled
-                v-model="comment.body"
+                v-model="comment"
                 type="textarea"
                 label="Leave a comment"
               />
@@ -57,30 +59,136 @@
 
             <q-tab-panel name="preview">
               <div class="text-h6">Preview</div>
-              <q-markdown v-if="comment.body"
-                          :src="comment.body"
+              <q-markdown v-if="comment"
+                          :src="comment"
                           class="fit bordered q-pa-sm wrap-sm"
               >
               </q-markdown>
               <span class="text-italic" v-else>Nothing to preview</span>
             </q-tab-panel>
           </q-tab-panels>
-          <q-uploader
-            ref="attachments"
-            label="Attach files"
-            auto-upload
-            :url="issueAttachmentsEndpoint"
-            multiple
-            :factory="factoryFn"
-            @uploaded="fileUploadFinished"
-          />
+          <div class="row">
+            <q-uploader
+              ref="attachments"
+              label="Attach files"
+              auto-upload
+              :url="issueAttachmentsEndpoint"
+              multiple
+              flat
+              :factory="factoryFn"
+              @uploaded="fileUploadFinished"
+              class="q-md-12 full-width"
+            />
+          </div>
           <div>
-            <q-btn label="Submit" type="submit" color="primary"/>
-            <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+            <q-btn label="Post comment" type="submit" color="primary"/>
+            <!--<q-btn label="" type="reset" color="primary" flat class="q-ml-sm" />-->
           </div>
         </q-form>
       </q-card-section>
     </q-card>
+    <q-card class="col-lg-4 col-md-3 transparent" flat>
+      <q-card-section>
+        <div class="q-mb-xs">Assignees</div>
+        <q-list bordered>
+          <q-item v-for="assignee in assignees" v-bind:key="assignee.id">
+            <q-item-section avatar>
+              <q-avatar>
+                <img :src="assignee.avatar">
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>{{ assignee.display_name }}</q-item-section>
+          </q-item>
+          <q-item v-if="assignees.length === 0">
+            <em>No one&dash;assign yourself</em>
+          </q-item>
+        </q-list>
+      </q-card-section>
+      <q-card-section>
+        <div class="q-mb-xs">Labels</div>
+        <q-chip v-bind:key="label.label" v-for="label in labels" color="bug" text-color="black">
+          {{ label.label }}
+        </q-chip>
+      </q-card-section>
+      <q-card-section>
+        <div class="q-mb-xs">{{ `${participants.length} participant` }}{{ participants.length > 1 ? 's' : '' }}</div>
+        <div class="row">
+          <q-avatar v-for="part in participants" v-bind:key="part.id">
+            <img :src="part.avatar" width="64" height="64">
+            <q-tooltip>
+              <div class="row text-center">
+                <img :src="part.avatar" width="64" height="64"> {{ part.display_name }}
+              </div>
+              <div class="row flex">
+                Opened this issue
+              </div>
+              <div class="row flex">
+                Owns this project
+              </div>
+            </q-tooltip>
+          </q-avatar>
+        </div>
+      </q-card-section>
+      <q-card-section class="q-gutter-md">
+        <div class="row">
+          <q-btn align="left" label="Lock thread" icon="lock" class="full-width" flat @click="lockIssueThreadDlg = true" />
+        </div>
+        <div class="row">
+          <q-btn align="left" label="Pin issue" icon="mdi-pin" class="full-width text-left" flat />
+        </div>
+        <div class="row">
+          <q-btn align="left" label="Delete issue" icon="delete" class="full-width text-left" flat />
+        </div>
+      </q-card-section>
+    </q-card>
+    <q-dialog v-model="lockIssueThreadDlg" ref="lockIssueThreadDlg" @hide="lockIssueThreadDlg_onHideDlg">
+      <q-card class="q-dialog-plugin">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Lock thread on this issue</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section>
+          <ul>
+            <li>Other users can’t add new comments to this issue.</li>
+            <li>You and other collaborators with access to this repository can still leave comments that others can see.</li>
+            <li>You can always unlock this issue again in the future.</li>
+          </ul>
+        </q-card-section>
+        <q-card-section>
+          <div class="text-h6">Reason for locking</div>
+          <q-select filled v-model="reason" :options="reasonOptions" label="Choose a reason" />
+        </q-card-section>
+        <q-separator />
+        <q-card-actions align="center">
+          <q-btn class="full-width" color="primary" label="Lock thread on this issue" @click="lockIssueThreadDlg_onOkClick" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog ref="addRemoveAssigneesDlg" @hide="addRemoveAssigneesDlg_onHideDlg">
+      <q-card class="q-dialog-plugin">
+        <q-card-section>
+          <q-input v-model="issue.title" label="Issue Title" />
+          <q-input type="textarea" v-model="issue.description" label="Issue Description" />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn color="primary" label="OK" @click="addRemoveAssigneesDlg_onOkClick" />
+          <q-btn color="primary" label="Cancel" @click="addRemoveAssigneesDlg_onCancelClick" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog ref="addRemoveLabelsDlg" @hide="addRemoveLabelsDlg_onHideDlg">
+      <q-card class="q-dialog-plugin">
+        <q-card-section>
+          <q-input v-model="issue.title" label="Issue Title" />
+          <q-input type="textarea" v-model="issue.description" label="Issue Description" />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn color="primary" label="OK" @click="addRemoveLabelsDlg_onOkClick" />
+          <q-btn color="primary" label="Cancel" @click="addRemoveLabelsDlg_onCancelClick" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
   </div>
 </template>
@@ -125,7 +233,8 @@ export default {
     this.labels = labels
     this.assignees = assignees
     this.participants = participants
-    // console.log(this.issue, this.author, this.thread, this.comments, this.project)
+    console.log(this.issue, this.author, this.thread, this.project)
+    console.log(labels, assignees, participants)
   },
   data: () => ({
     tab: 'write',
@@ -134,9 +243,7 @@ export default {
     author: null,
     project: null,
     comments: [],
-    comment: {
-      body: ''
-    },
+    comment: '',
     labels: [],
     assignees: [],
     participants: [],
@@ -144,7 +251,10 @@ export default {
     uploadProgress: [],
     uploading: null,
     apiUrl: 'process.env.API_URL',
-    issueAttachmentsEndpoint: ''
+    issueAttachmentsEndpoint: '',
+    lockIssueThreadDlg: false,
+    reason: '',
+    reasonOptions: ['Off-topic', 'Too heated', 'Resolved', 'Spam']
   }),
   computed: {
     ...mapGetters({
@@ -171,15 +281,12 @@ export default {
       return auth
     },
     parseDate (d) {
-      // console.log(d)
       return new Date(d).toDateString()
     },
     factoryFn (files) {
       this.files = files
-      // returning a Promise
 
       return new Promise((resolve) => {
-        // simulating a delay of 2 seconds
         setTimeout(() => {
           resolve({
             url: this.issueAttachmentsEndpoint,
@@ -197,25 +304,45 @@ export default {
       const response = JSON.parse(xhr.response)
       const file = files[0]
       const { data } = response
-      // console.log(file)
-      // console.log(data)
-      this.comment.body += `\n[${file.name}](${data})`
+      this.comment += `\n[${file.name}](${data})`
     },
     onSubmit () {
-      const com = this.comment.body // createComment({ authorId: this.getUser.id, authorName: this.getUser.name, body: this.comment.body, upVotes: 0, downVotes: 0, myVote: '', createdOn: new Date(), updatedOn: new Date() })
-      // console.log(com)
-      // this.thread.comments.push(createComment({ id: this.getComments.length + 1, authorId: this.user.id, body: this.comment.body, createdOn: new Date(), updatedOn: new Date() }))
-      this.$store.dispatch('issue/storeComment', { owner: this.author.display_name, project: this.project.slug, issueId: this.issue.id, com }).then(r => {
-        // console.log(r)
+      const com = { body: this.comment }
+      this.$store.dispatch('issue/storeComment', { owner: this.getUser.nickname, project: this.project.slug, issueId: this.issue.id, com }).then(r => {
         this.comments = r.comments
-        // console.log(this.comments)
       })
-      // const thd = Object.create(this.thread)
-      // this.$store.dispatch('issue/storeThread', Object.assign({}, thd))
-      // this.thread.comments = this.getComments
-      // console.log(this.thread)
-      this.comment.body = ''
+      this.comment = ''
       this.$refs.attachments.reset()
+    },
+    lockIssueThreadDlg_show () {
+      this.$refs.lockIssueThreadDlg.show()
+    },
+    lockIssueThreadDlg_onHideDlg () {
+      //
+    },
+    lockIssueThreadDlg_onOkClick () {
+      //
+    },
+    lockIssueThreadDlg_onCancelClick () {
+      //
+    },
+    addRemoveAssigneesDlg_onHideDlg () {
+      //
+    },
+    addRemoveAssigneesDlg_onOkClick () {
+      //
+    },
+    addRemoveAssigneesDlg_onCancelClick () {
+      //
+    },
+    addRemoveLabelsDlg_onHideDlg () {
+      //
+    },
+    addRemoveLabelsDlg_onOkClick () {
+      //
+    },
+    addRemoveLabelsDlg_onCancelClick () {
+      //
     },
 
     onReset () {

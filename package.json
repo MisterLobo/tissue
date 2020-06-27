@@ -73,6 +73,7 @@
     "eslint-plugin-vue": "^6.1.2",
     "majestic": "^1.2.24",
     "prosemirror-utils": "^0.9.6",
+    "ts-jest": "^26.1.0",
     "vue-jest": "^3.0.0",
     "wallaby-vue-compiler": "^1.0.3"
   },

@@ -9,3 +9,4 @@
 /test
 wallaby.js
 *.config.js
+/src/**/__tests__

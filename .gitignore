@@ -47,3 +47,5 @@ dotenv
 
 /test/jest/coverage
 /test/lighthouse/reports
+/src/**/__tests__
+/test/cypress/videos
