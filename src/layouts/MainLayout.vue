@@ -70,7 +70,7 @@
                 <q-item-section>Your Projects</q-item-section>
               </q-item>
               <q-item clickable>
-                <q-item-section>Your Teams</q-item-section>
+                <q-item-section>Your Organizations</q-item-section>
               </q-item>
               <q-item clickable>
                 <q-item-section>Account Settings</q-item-section>
