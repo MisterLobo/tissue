@@ -281,15 +281,12 @@ export default {
       return auth
     },
     parseDate (d) {
-      // console.log(d)
       return new Date(d).toDateString()
     },
     factoryFn (files) {
       this.files = files
-      // returning a Promise
 
       return new Promise((resolve) => {
-        // simulating a delay of 2 seconds
         setTimeout(() => {
           resolve({
             url: this.issueAttachmentsEndpoint,
@@ -307,23 +304,13 @@ export default {
       const response = JSON.parse(xhr.response)
       const file = files[0]
       const { data } = response
-      // console.log(file)
-      // console.log(data)
       this.comment += `\n[${file.name}](${data})`
     },
     onSubmit () {
-      const com = { body: this.comment } // createComment({ authorId: this.getUser.id, authorName: this.getUser.name, body: this.comment.body, upVotes: 0, downVotes: 0, myVote: '', createdOn: new Date(), updatedOn: new Date() })
-      // console.log(com)
-      // this.thread.comments.push(createComment({ id: this.getComments.length + 1, authorId: this.user.id, body: this.comment.body, createdOn: new Date(), updatedOn: new Date() }))
+      const com = { body: this.comment }
       this.$store.dispatch('issue/storeComment', { owner: this.getUser.nickname, project: this.project.slug, issueId: this.issue.id, com }).then(r => {
-        // console.log(r)
         this.comments = r.comments
-        // console.log(this.comments)
       })
-      // const thd = Object.create(this.thread)
-      // this.$store.dispatch('issue/storeThread', Object.assign({}, thd))
-      // this.thread.comments = this.getComments
-      // console.log(this.thread)
       this.comment = ''
       this.$refs.attachments.reset()
     },
