@@ -32,6 +32,14 @@ const routes: RouteConfig[] = [
         ]
       },
       {
+        path: '/:owner/:project/settings',
+        component: () => import('pages/ProjectSettingsPage.vue'),
+        children: [
+          { path: '', name: 'project-settings', component: () => import('components/ProjectSettingsGeneralComponent.vue') },
+          { path: 'members', name: 'project-settings-members', component: () => import('components/ProjectSettingsMembersComponent.vue') }
+        ]
+      },
+      {
         path: '/:owner/projects',
         component: () => import('pages/ProjectsPage.vue'),
         children: [
