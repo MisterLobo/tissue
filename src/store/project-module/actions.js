@@ -30,6 +30,11 @@ export function storeProject ({ commit }, data) {
   })
 }
 
+/**
+ * Store the project state for viewing
+ * @param commit
+ * @param proj
+ */
 export function viewProject ({ commit }, proj) {
   // console.log('viewProject: ', proj)
   commit('setViewProject', proj)
@@ -45,18 +50,18 @@ export function fetchProject ({ commit }, name) {
 
 /**
  * Get projects for authenticated user
- * @param owner The name of the owner
  * @returns {Promise<AxiosResponse<any> | void>}
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function fetchProjects ({ commit }, owner) {
+export function fetchProjects ({ commit }) {
   const headers = { Authorization: `Bearer ${SessionStorage.getItem('access_token')}` }
   return axios.get('/api/user/projects', { headers: { common: headers } }).then(r => {
     // console.log(r)
     const projs = r.data.data
     const { projects } = projs
-    // console.log(projs)
+    console.log(projects)
     commit('setProjects', projects)
+    return new Promise(resolve => resolve(projects))
   }).catch(e => console.error(e))
 }
 
@@ -70,7 +75,7 @@ export function getProject ({ commit }, { owner, name }) {
   const headers = { Authorization: `Bearer ${SessionStorage.getItem('access_token')}` }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return axios.get(`/api/proj/${owner}/${name}`, { headers: { common: headers } }).then(r => {
-    // console.log(r)
+    console.log(r)
     commit('setProject', name)
   }).catch(e => console.error(e))
 }
