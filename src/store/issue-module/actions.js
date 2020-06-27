@@ -5,16 +5,15 @@ export function storeIssue ({ commit }, { data, owner, projectName }) {
   const headers = { Authorization: `Bearer ${SessionStorage.getItem('access_token')}` }
   return axios.post(`/api/proj/${owner}/${projectName}/issues`, { issue: data }, { headers: { common: headers } }).then(r => {
     const rddd = r.data.data
-    const { issue, thread } = rddd
-    const { project } = issue
+    const { issue, thread, project } = rddd
     // console.log(rddd)
     commit('setThread', thread)
     commit('setIssue', issue)
     commit('setComments', thread.comments)
     commit('setAuthor', issue.author)
-    const labels = issue.comments ? JSON.parse(issue.comments) : []
-    const assignees = issue.assignees ? JSON.parse(issue.assignees) : []
-    const participants = issue.participants ? JSON.parse(issue.participants) : []
+    const labels = thread.labels // ? JSON.parse(thread.comments) : []
+    const assignees = thread.assignees // ? JSON.parse(thread.assignees) : []
+    const participants = thread.participants // ? JSON.parse(thread.participants) : []
     commit('setMeta', { labels, assignees, participants })
     return new Promise(resolve => resolve({ issue, thread, project }))
   }) // .catch(e => console.error(e))
@@ -34,38 +33,44 @@ export function fetchIssue ({ commit }, { owner, project, id }) {
   // console.log(owner, project, id)
   const headers = { Authorization: `Bearer ${SessionStorage.getItem('access_token')}` }
   return axios.get(`/api/proj/${owner}/${project}/issues/${id}`, { headers: { common: headers } }).then(r => {
-    const rdd = r.data.data.r
-    const me = r.data.data.u
+    const rdd = r.data.data
+    console.log(rdd)
+    const me = rdd.u
     const rr = {
       issue: rdd.i,
       thread: rdd.t,
-      owner: rdd.o,
-      project: rdd.p
+      project: rdd.p,
+      user: me
     }
     // console.log(rdd)
+    commit('setAuthor', me)
     commit('setMyVotes', me.votes)
-    const meta = rr.issue.meta
+    const meta = {
+      labels: rr.thread.labels,
+      assignees: rr.thread.assignees,
+      participants: rr.thread.participants
+    }
     // console.log(meta)
     commit('setMeta', meta)
     return new Promise(resolve => resolve(rr))
   }).catch(e => console.error(e))
 }
-export function viewIssueThread ({ commit }, { thread, issue, owner, project }) {
+export function viewIssueThread ({ commit }, { thread, issue, user, project }) {
   // console.log(thread, issue, owner, project)
   commit('setThread', thread)
   commit('setComments', thread.comments)
   commit('setIssue', issue)
   commit('setProject', project)
-  commit('setAuthor', owner)
+  commit('setAuthor', user)
   return new Promise(resolve => resolve(true))
 }
 export function storeThread ({ commit }, data) {
   commit('setThread', data)
 }
-export function storeComment ({ commit }, { owner, project, issueId, vote }) {
+export function storeComment ({ commit }, { owner, project, issueId, com }) {
   const headers = { Authorization: `Bearer ${SessionStorage.getItem('access_token')}` }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return axios.post(`/api/proj/${owner}/${project}/issues/${issueId}/comments`, { payload: { body: vote } }, { headers: { common: headers } }).then(r => {
+  return axios.post(`/api/proj/${owner}/${project}/issues/${issueId}/comments`, { payload: com }, { headers: { common: headers } }).then(r => {
     const { thread, comment } = r.data.data
     const { comments } = thread
     // commit('setThread', thread)
