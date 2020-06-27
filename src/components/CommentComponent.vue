@@ -16,8 +16,8 @@
     <q-separator />
 
     <q-card-actions>
-      <q-btn flat icon="thumb_up" label="Like" @click="upVote" :color="vote === 'up' ? 'blue' : ''" />
-      <q-btn flat icon="thumb_down" label="Dislike" @click="downVote" :color="vote === 'down' ? 'blue' : ''" />
+      <q-btn flat icon="thumb_up" label="Upvote" @click="upVote" :color="vote === 'up' ? 'blue' : ''" />
+      <q-btn flat icon="thumb_down" label="Downvote" @click="downVote" :color="vote === 'down' ? 'blue' : ''" />
       <q-space/><q-icon name="thumb_up"/>&nbsp;{{ comment.upvotes || 0 }}&nbsp;<q-icon name="thumb_down"/>&nbsp;{{ comment.downvotes || 0 }}
     </q-card-actions>
   </q-card>

@@ -187,12 +187,13 @@ export default {
   created () {
     this.apiUrl = process.env.API_URL
     this.issueAttachmentsEndpoint = `${this.apiUrl}/api/upload`
-    this.assignees = [
+    /* this.assignees = [
       {
         label: `Assign yourself (${this.getUser.name})`,
         value: this.getUser.id
       }
-    ]
+    ] */
+    this.issue = this.project.owners
     dummyProjects = [
       createProject({
         id: 1,
@@ -411,15 +412,12 @@ export default {
         })
       }
       else {
-        const issue = Object.assign({}, this.issue, { status: 'open', projectId: this.project.id, userId: this.getUser.id, projectRef: this.project })
+        const issue = Object.assign({}, this.issue, { status: 'open' })
         // console.log(this.project)
         const data = createIssue(issue)
         // eslint-disable-next-line @typescript-eslint/camelcase
-        data.project_id = this.project.id
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        data.author_id = this.getUser.id
         data.participants = [this.getUser.id]
-        this.$store.dispatch('issue/storeIssue', { data, owner: this.project.owner.display_name, projectName: this.project.slug }).then(({ issue, thread, project }) => {
+        this.$store.dispatch('issue/storeIssue', { data, owner: this.getUser.display_name, projectName: this.project.slug }).then(({ issue, thread, project }) => {
           console.log(issue)
           console.log(thread)
           console.log(project)

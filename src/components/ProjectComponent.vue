@@ -1,8 +1,37 @@
 <template>
-  <div class="justify-center" style="width: 50%">
-    <q-card class="my-card">
+  <div class="justify-center" style="width: 50vw">
+    <q-toolbar>
+      <q-toolbar-title>
+        <div class="text-h4" v-if="$q.screen.gt.sm && project">{{ project.owner.display_name }} / {{ title }}</div>
+        <div class="text-subtitle1" v-if="!$q.screen.gt.sm && project">{{ project.owner.display_name }} / {{ title }}</div>
+        <div class="text-h3" v-if="!project">
+          <q-spinner-tail
+            color="primary"
+            size="2em"
+          />
+          <q-tooltip :offset="[0, 8]">QSpinnerTail</q-tooltip>
+        </div>
+      </q-toolbar-title>
+      <q-space v-if="$q.screen.gt.sm" />
+      <q-btn flat round dense icon="group_add" />
+    </q-toolbar>
+    <q-toolbar inset>
+      <q-tabs
+        v-model="tab"
+        dense
+        class="text-grey"
+        active-color="primary"
+        indicator-color="primary"
+        align="left"
+      >
+        <q-tab name="project" label="Project" />
+        <q-tab name="issues" label="Issues" />
+        <q-tab name="settings" label="Settings" />
+      </q-tabs>
+    </q-toolbar>
+    <q-card class="my-card" flat>
       <q-card-section>
-        <q-tabs
+        <!--<q-tabs
           v-model="tab"
           dense
           class="text-grey"
@@ -12,17 +41,20 @@
         >
           <q-tab name="project" label="Project" />
           <q-tab name="issues" label="Issues" />
-        </q-tabs>
+        </q-tabs>-->
 
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="project">
             <div class="row">
-              <div class="text-h3">{{ title || 'Project Name' }}</div>
+              <div v-if="$q.screen.gt.sm" class="text-h5">{{ title || 'Project Name' }}</div>
+              <div v-if="!$q.screen.gt.sm" class="text-subtitle1">{{ title || 'Project Name' }}</div>
               <q-space />
-              <div class="text-h3">
-                <q-btn label="Edit Project" color="green" />
+              <div class="text-h5 float-right q-gutter-md">
+                <q-btn label="Edit Project" color="green" v-if="$q.screen.gt.sm" />
+                <q-btn icon="edit" round flat v-if="!$q.screen.gt.sm" />
+                <q-btn icon="settings" round flat @click="tab = 'settings'" />
               </div>
             </div>
             <div class="row">
@@ -58,7 +90,7 @@
                   @{{ issue.author.display_name }} in #{{ issue.id }}: > {{ issue.title }}
                 </q-item-label>
                 <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary text-uppercase" @click="viewIssueThread(issue)">
-                  <span class="cursor-pointer">Open in GitHub</span>
+                  <span class="cursor-pointer">Open issue</span>
                 </q-item-label>
               </q-item-section>
 
@@ -70,6 +102,12 @@
                 </div>
               </q-item-section>
             </q-item>
+            <q-item v-if="issues.length === 0">
+              <div class="text-center text-italic">No issues</div>
+            </q-item>
+          </q-tab-panel>
+          <q-tab-panel name="settings">
+            <project-settings-component></project-settings-component>
           </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
@@ -80,10 +118,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import ProjectSettingsComponent from './ProjectSettingsComponent'
 // import { createProject } from '../models'
 
 export default {
   name: 'ProjectComponent',
+  components: { ProjectSettingsComponent },
   preFetch ({ store, /* currentRoute, previousRoute, */ redirect }) {
     // fetch data, validate route and optionally redirect to some other route...
 
@@ -160,9 +200,9 @@ export default {
     viewIssueThread (iss) {
       const issue = Object.assign(iss)
       // console.log(issue)
-      this.$store.dispatch('issue/fetchIssue', { owner: issue.author.display_name, project: issue.project.slug, id: issue.id }).then(({ issue, thread, owner, project }) => {
-        console.log(issue, thread, owner, project)
-        this.$store.dispatch('issue/viewIssueThread', { issue, thread, owner, project }).then(r => {
+      this.$store.dispatch('issue/fetchIssue', { owner: issue.author.display_name, project: issue.project.slug, id: issue.id }).then(({ issue, thread, user, project }) => {
+        console.log(issue, thread, user, project)
+        this.$store.dispatch('issue/viewIssueThread', { issue, thread, user, project }).then(r => {
           if (r === true) this.$router.push({ name: 'issue-thread', params: { issueId: issue.id } })
         })
       })
@@ -186,8 +226,6 @@ export default {
         })
         const p = {
           // eslint-disable-next-line @typescript-eslint/camelcase
-          owner_id: this.getUser.id,
-          ownerType: 'user',
           title: this.title,
           slug: this.slug,
           description: this.description,
@@ -196,6 +234,7 @@ export default {
           is_public: this.public_project
         }
         // const project = createProject(p)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         this.$store.dispatch('project/storeProject', p).then(r => {
           // console.log(r)
           this.$router.push({ name: 'project-view', params: { project: p.slug } })
@@ -212,3 +251,11 @@ export default {
   }
 }
 </script>
+<test lang="jest">
+  describe('test 1', () => {
+    it('Prints Hello World!', () => {
+      const isTrue = true
+      expect(isTrue).toBe(true)
+    })
+  })
+</test>

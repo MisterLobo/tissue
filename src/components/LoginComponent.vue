@@ -1,7 +1,7 @@
 <template>
-  <div class="self-center">
-    <q-btn icon="mdi-github" @click="AuthProvider('github')">Log in with Github</q-btn>
-    <q-btn icon="mdi-google" @click="AuthProvider('google')">Log in with Google</q-btn>
+  <div class="self-center q-gutter-md">
+    <q-btn class="full-width" icon="mdi-github" @click="AuthProvider('github')">Log in with Github</q-btn>
+    <q-btn class="full-width" icon="mdi-google" @click="AuthProvider('google')">Log in with Google</q-btn>
   </div>
 </template>
 
@@ -15,12 +15,15 @@ export default {
   computed: {
     ...mapGetters({
       getUser: 'user/getUserState'
-    }),
-    ...mapActions({
-      newUser: 'user/storeUser'
     })
+    // ...mapActions('user', ['authenticateSocialUser'])
   },
   methods: {
+    ...mapActions({
+      authenticateUser: 'user/authenticateUser',
+      authenticateSocialUser: 'user/authenticateSocialUser',
+      newUser: 'user/storeUser'
+    }),
     authenticate (data) {
       this.$store.dispatch('user/authenticateUser', data).then((r) => {
         console.log(r)
@@ -42,7 +45,8 @@ export default {
     },
 
     SocialLogin (provider, response) {
-      this.$store.dispatch('user/authenticateSocialUser', { provider, preAuth: response }).then((u, a) => {
+      // this.$store.dispatch('user/authenticateSocialUser', { provider, preAuth: response }).then((u, a) => {
+      this.authenticateSocialUser({ provider, preAuth: response }).then((u, a) => {
         console.log(u)
         // this.authenticate(provider, { email: u.email, name: u.name, token: u.token })
         this.$store.dispatch('user/storeUser', u).catch(e => console.error(e))
