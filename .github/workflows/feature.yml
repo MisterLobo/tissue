@@ -8,6 +8,8 @@ on:
     branches: [ feature/* ]
     paths:
       - 'src/**'
+      - '.eslintrc.js'
+      - '*.json'
 
 jobs:
   build:
