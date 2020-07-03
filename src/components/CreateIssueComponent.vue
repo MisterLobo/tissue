@@ -60,16 +60,20 @@
             v-model="issue.assignees"
             multiple
             :options="assignees"
+            :option-label="opt => Object(opt) === opt && 'name' in opt ? (opt.name === getUser.name ? `Assign yourself (${opt.name})` : opt.name) : '- Null -'"
+            :option-value="opt => Object(opt) === opt && 'id' in opt ? opt.id : null"
+            emit-value
+            map-options
             use-chips
             stack-label
             label="Assignees"
           />
-          <q-select
+          <!--<q-select
             filled
             v-model="issue.severity"
             :options="severity"
             label="Severity"
-          />
+          />-->
           <q-tabs
             v-model="tab"
             dense
@@ -193,7 +197,6 @@ export default {
         value: this.getUser.id
       }
     ] */
-    this.issue = this.project.owners
     dummyProjects = [
       createProject({
         id: 1,
@@ -229,6 +232,7 @@ export default {
       })
     ]
     this.project = this.getProject
+    this.assignees = this.project.members
     console.log(this.project)
   },
   mounted () {
