@@ -58,7 +58,7 @@
             </q-tab-panel>
 
             <q-tab-panel name="preview">
-              <div class="text-h6">Preview</div>
+              <!--<div class="text-h6">Preview</div>-->
               <q-markdown v-if="comment"
                           :src="comment"
                           class="fit bordered q-pa-sm wrap-sm"
